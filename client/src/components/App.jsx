@@ -1,0 +1,70 @@
+import React, { useState, useEffect } from "react";
+import Note from './Note';
+import Header from './Header';
+import CreateArea from "./CreateArea";
+
+function App() {
+
+    const [notes, setNotes] = useState([]);
+
+    const fetchdata = async () => {
+        const data = await fetch('/api');
+        const jsonData = await data.json();
+        setNotes(jsonData);
+    }
+
+    useEffect(() => {
+        fetchdata();
+        // console.log(notes);
+    }, []);
+
+    function handleDelete(id, title) {
+        setNotes((prevNotes) => {
+            return prevNotes.filter((note, index) => {
+                return index !== id;
+            });
+        });
+
+        const bodyData = {
+            title : title,
+            id : id
+        };
+
+        fetch('/api/delete', {
+            method: 'delete',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bodyData)
+        }).then(response => response.json()).then(data => {
+            console.log(data);
+            setNotes(data);
+        })
+    }
+    function handleNewData(data){
+        setNotes((prevNotes) => [...prevNotes, data]);
+    }
+
+    function handleEdit(note){
+        
+    }
+
+    return (
+        <div>
+            <Header />
+            <CreateArea  newNote = {handleNewData} />
+            {notes.map((note, index) => {
+                return <Note
+                    key={index}
+                    id={index}
+                    title={note.title}
+                    content={note.content}
+                    delete={handleDelete}
+                    edit={handleEdit}
+                />
+            })}
+        </div>
+    );
+}
+
+export default App;
