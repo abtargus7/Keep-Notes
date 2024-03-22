@@ -2,10 +2,12 @@ import React, { useState, useEffect } from "react";
 import Note from './Note';
 import Header from './Header';
 import CreateArea from "./CreateArea";
+import { Outlet } from "react-router-dom";
 
 function App() {
 
     const [notes, setNotes] = useState([]);
+    const [editNote, setEditNote] = useState({});
 
     const fetchdata = async () => {
         const data = await fetch('/api');
@@ -19,11 +21,7 @@ function App() {
     }, []);
 
     function handleDelete(id, title) {
-        setNotes((prevNotes) => {
-            return prevNotes.filter((note, index) => {
-                return index !== id;
-            });
-        });
+        
 
         const bodyData = {
             title : title,
@@ -51,7 +49,6 @@ function App() {
 
     return (
         <div>
-            <Header />
             <CreateArea  newNote = {handleNewData} />
             {notes.map((note, index) => {
                 return <Note
